@@ -8,9 +8,9 @@
 #define L 20
 #define N L*L*L
 #define J 1
-// #define k 1
-#define STEP 1000
-#define LOOP 1000
+#define kB 1
+#define STEP 1000 // 初期依存性をなくすためのループ(モンテカルロステップ)
+#define LOOP 1000 // 物理量を計測するループ
 
 double energy(int ***array);
 double magnetic(int ***array);
@@ -20,10 +20,10 @@ void outputSpin(int ***array, int kt);
 
 int main(void){
     // 変数の宣言
-    int i, j, k, elemen, t, flag;
+    int i, j, k, elemen, times, flag;
     int ***array;
     int ***Init;
-    double en, mag, en2, mag2, heat, mag_suscep, aveEN, aveMAG, aveEN2, aveMAG2, kt, kt2;
+    double en, mag, en2, mag2, heat, mag_suscep, aveEN, aveMAG, aveEN2, aveMAG2, t, kt, kt2;
     long double sumEN, sumMAG;
 
     // 配列の確保
@@ -74,7 +74,7 @@ int main(void){
     }
 
     // 温度変化させるループ
-    for(kt=0.1;kt<=30.00;kt+=0.1){
+    for(t=0.1;t<=30.00;t+=0.1){
         // 初期配列
         for(i=0;i<L;i++){
             for(j=0;j<L;j++){
@@ -93,21 +93,22 @@ int main(void){
         sumMAG = 0;
         en2 = 0;
         mag2 = 0;
-        kt2 = kt*kt;
+        kt = kB*t;
+        kt2 = kB*t*t;
         
-        // 状態を変化させる処理
+        // エネルギーと磁化の計算
         en = energy(array);
         mag = magnetic(array);
 
         // 熱平衡かさせるための事前動作
-        for(t=0;t<STEP;t++){
+        for(times=0;times<STEP;times++){
             for(i=0;i<N;i++){
                 metropolis3D(array, kt, &en, &mag);
             }
-        }        
+        }
         
         // 物理量を計算するループ
-        for(t=0;t<LOOP;t++){
+        for(times=0;times<LOOP;times++){
             metropolis3D(array, kt, &en, &mag);
             // 物理量の総和の計算
             sumEN += en;
@@ -120,7 +121,7 @@ int main(void){
         aveEN2  = en2/LOOP;
         aveMAG2 = mag2/LOOP;
 
-        heat = (aveEN2 - (aveEN*aveEN))*k/kt2;
+        heat = (aveEN2 - (aveEN*aveEN))/kt2;
         mag_suscep = (aveMAG2 - (aveMAG*aveMAG))/kt;
 
         // aveEN /= N;

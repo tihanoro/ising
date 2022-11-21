@@ -7,11 +7,11 @@
 #include<math.h>
 #include<time.h>
 
-#define L 200
+#define L 300
 #define N L*L
 #define J 1
 #define k 1
-#define STEP L
+#define STEP 1000
 #define LOOP 2000000
 
 double energy(int **array);
@@ -84,7 +84,7 @@ int main(void){
         mag = magnetic(array);
 
         // 熱平衡かさせるための事前動作
-        for(t=0;t<30;t++){
+        for(t=0;t<STEP;t++){
             for(i=0;i<N;i++){
                 metropolis2D(array, kt, &en, &mag);
             }
