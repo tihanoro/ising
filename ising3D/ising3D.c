@@ -41,10 +41,10 @@ int main(void){
 
     // データを書き込むファイルを開く
     FILE *energyfile, *magneticfile, *heatfile, *mag_suscepfile;
-    energyfile = fopen("output/energy-random.dat", "w");
-    magneticfile = fopen("output/magnetic-random.dat", "w");
-    heatfile = fopen("output/heat-random.dat", "w");
-    mag_suscepfile = fopen("output/mag_suscep-random.dat", "w");
+    energyfile = fopen("output/energy3D.dat", "w");
+    magneticfile = fopen("output/magnetic3D.dat", "w");
+    heatfile = fopen("output/heat3D.dat", "w");
+    mag_suscepfile = fopen("output/mag_suscep3D.dat", "w");
 
     // debug
     char str[100];
