@@ -54,17 +54,13 @@ int main(void){
 
     printf("N:%d\n",N);
     printf("サンプリング:%d回\n",LOOP);
-
-    // 初期配列(無秩序)
+    
+    // 初期配列(秩序)
     for(i=0;i<L;i++){
         for(j=0;j<L;j++){
             for(k=0;k<L;k++){
-                if(rand()%2){
-                    Init[i][j][k] = 1;
-                }else{
-                    Init[i][j][k] = -1;
-                }
-            }
+                Init[i][j][k] = 1;
+            }      
         }
     }
 
