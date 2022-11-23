@@ -5,12 +5,12 @@
 #include<math.h>
 #include<time.h>
 
-#define L 50
+#define L 300
 #define N L*L
 #define J 1
 #define kB 1
-#define STEP 1000 // 初期依存性をなくすためのループ(モンテカルロステップ)
-#define LOOP 1000000 // 物理量を計測するループ
+#define STEP 100 // 初期依存性をなくすためのループ(モンテカルロステップ)
+#define LOOP 10000000 // 物理量を計測するループ
 
 double energy(int **array);
 double magnetic(int **array);
@@ -56,7 +56,7 @@ int main(void){
     }
 
     // 温度変化させるループ
-    for(t=0.1;t<=30.00;t+=0.1){
+    for(t=0.1;t<=10.00;t+=0.1){
         // 初期配列
         for(i=0;i<L;i++){
             for(j=0;j<L;j++){
