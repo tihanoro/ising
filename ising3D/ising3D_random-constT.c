@@ -136,8 +136,12 @@ int main(void){
     fclose(heatt);
     fclose(mag_suscepp);
     for(i=0;i<L;i++){
-        free(Init[i]);
+        for(j=0;j<L;j++){
+            free(array[i][j]);
+            free(Init[i][j]);
+        }
         free(array[i]);
+        free(Init[i]);
     }
     free(array);
     free(Init);

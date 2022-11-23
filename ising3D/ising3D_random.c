@@ -152,6 +152,10 @@ int main(void){
     fclose(heatfile);
     fclose(mag_suscepfile);
     for(i=0;i<L;i++){
+        for(j=0;j<L;j++){
+            free(array[i][j]);
+            free(Init[i][j]);
+        }
         free(array[i]);
         free(Init[i]);
     }
