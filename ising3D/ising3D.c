@@ -10,7 +10,7 @@
 #define J 1
 #define kB 1
 #define STEP 100 // 初期依存性をなくすためのループ(モンテカルロステップ)
-#define LOOP 100000000 // 物理量を計測するループ
+#define LOOP 200 // 物理量を計測するループ
 
 double energy(int ***array);
 double magnetic(int ***array);
@@ -49,8 +49,9 @@ int main(void){
     // 乱数のSEED値の設定
     srand((unsigned)time(NULL));
 
+    printf("L:%d\n",L);
     printf("N:%d\n",N);
-    printf("サンプリング:%d回\n",LOOP);
+    printf("サンプリング:%d回\n",LOOP*N);
     
     // 初期配列(秩序)
     for(i=0;i<L;i++){
@@ -62,7 +63,7 @@ int main(void){
     }
 
     // 温度変化させるループ
-    for(t=0.1;t<=10.00;t+=0.1){
+    for(t=0.01;t<=20.00;t+=0.01){
         // 初期配列
         for(i=0;i<L;i++){
             for(j=0;j<L;j++){
@@ -96,7 +97,7 @@ int main(void){
         }
         
         // 物理量を計算するループ
-        for(times=0;times<LOOP;times++){
+        for(times=0;times<LOOP*N;times++){
             metropolis3D(array, kt, &en, &mag);
             // 物理量の総和の計算
             sumEN += en;
@@ -105,10 +106,10 @@ int main(void){
             mag2 += mag*mag;
         }
 
-        aveEN = sumEN/LOOP;
-        aveMAG = sumMAG/LOOP;
-        aveEN2  = en2/LOOP;
-        aveMAG2 = mag2/LOOP;
+        aveEN = sumEN/(LOOP*N);
+        aveMAG = sumMAG/(LOOP*N);
+        aveEN2  = en2/(LOOP*N);
+        aveMAG2 = mag2/(LOOP*N);
 
         heat = (aveEN2 - (aveEN*aveEN))/kt2;
         mag_suscep = (aveMAG2 - (aveMAG*aveMAG))/kt;

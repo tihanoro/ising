@@ -2,12 +2,12 @@
 set term lua tikz
 set term tikz standalone size 5in,3in
 set terminal tikz createstyle
-set xrange [0:5]
+set xrange [0:20]
 set xl '$k_{B}T$'
 
 # グラフのプロット
 set yl '$E$'
-set yrange [-11000:0]
+set yrange [-40000:0]
 set output 'energy1D.tex'
 plot 'energy1D.dat' title '$E$' w l
 set yl '$M$'
