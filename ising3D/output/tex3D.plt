@@ -1,7 +1,6 @@
 # グラフの初期設定
 set term lua tikz
-set term tikz standalone size 5in,3in
-
+set term tikz 
 # gnuplot-tikzのスタイルファイルが欲しいときはこのコマンドを有効化する
 # set terminal tikz createstyle
 
@@ -9,11 +8,11 @@ set xrange [0:20]
 set xl '$k_{B}T[J]$'
 
 # グラフのプロット
-set yl '$E[J]$'
+set yl '$E$[J]'
 set yrange [-400000:0]
 set output 'energy3D.tex'
 plot 'energy3D.dat' title '$E$' w l
-set yl '$M/\mu\{B}[]$'
+set yl '$M$[J/T]'
 set yrange [-10000:150000]
 set output 'magnetic3D.tex'
 plot 'magnetic3D.dat' title '$M$' w l

@@ -1,15 +1,20 @@
-// ising1D-random.c 1次元イジングモデルの物理量の計算を行うプログラム
+// ising1D.c 1次元イジングモデルの物理量の計算を行うプログラム
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
 
-#define N 10000
+#define N 100000
 #define J 1
 #define kB 1
-#define STEP 1000 // 初期依存性をなくすためのループ(モンテカルロステップ)
-#define LOOP 10000000 // 物理量を計測するループ
+#define STEP 100 // 初期依存性をなくすためのループ(モンテカルロステップ)
+#define LOOP 200 // 物理量を計測するループ
+
+// progress barを作成するための定義
+#define T_MIN 0.01
+#define T_MAX 20.00
+#define T_STEP 0.01
 
 double energy(int *array);
 double magnetic(int *array);
@@ -32,32 +37,34 @@ int main(void){
 
     // データを書き込むファイルを開く
     FILE *energyfile, *magneticfile, *heatfile, *mag_suscepfile;
-    energyfile = fopen("output/energy1D-random.dat", "w");
-    magneticfile = fopen("output/magnetic1D-random.dat", "w");
-    heatfile = fopen("output/heat1D-random.dat", "w");
-    mag_suscepfile = fopen("output/mag_suscep1D-random.dat", "w");
+    char str1[100], str2[100], str3[100], str4[100];
+    sprintf(str1, "output/energy1D-%d.dat", N);
+    sprintf(str2, "output/magnetic1D-%d.dat", N);
+    sprintf(str3, "output/heat1D-%d.dat", N);
+    sprintf(str4, "output/mag_sucep1D-%d.dat", N);
+    energyfile = fopen(str1, "w");
+    magneticfile = fopen(str2, "w");
+    heatfile = fopen(str3, "w");
+    mag_suscepfile = fopen(str4, "w");
 
     // 乱数のSEED値の設定
     srand((unsigned)time(NULL));
 
     printf("N:%d\n",N);
-    printf("サンプリング:%d回\n",LOOP);
+    printf("サンプリング:%d回\n",LOOP*N);
     
     // 初期配列(無秩序)
     for(i=0;i<N;i++){
-        if(rand()%2){
             Init[i] = 1;
-        }else{
-            Init[i] = -1;
-        }
+    }
+    // 初期配列
+    for(i=0;i<N;i++){
+        array[i] = Init[i];
     }
 
     // 温度変化させるループ
-    for(t=0.01;t<=3.00;t+=0.01){
-        // 初期配列
-        for(i=0;i<N;i++){
-            array[i] = Init[i];
-        }
+    for(t=2.0;t>=0.0;t-=0.01){
+        
 
         printf("\r現在kt=%fを処理中\n",kt);
 
@@ -83,7 +90,7 @@ int main(void){
         }
         
         // 物理量を計算するループ
-        for(times=0;times<LOOP;times++){
+        for(times=0;times<LOOP*N;times++){
             metropolis3D(array, kt, &en, &mag);
             // 物理量の総和の計算
             sumEN += en;
@@ -92,10 +99,10 @@ int main(void){
             mag2 += mag*mag;
         }
         
-        aveEN = sumEN/LOOP;
-        aveMAG = sumMAG/LOOP;
-        aveEN2  = en2/LOOP;
-        aveMAG2 = mag2/LOOP;
+        aveEN = sumEN/(LOOP*N);
+        aveMAG = sumMAG/(LOOP*N);
+        aveEN2  = en2/(LOOP*N);
+        aveMAG2 = mag2/(LOOP*N);
 
         heat = (aveEN2 - (aveEN*aveEN))/kt2;
         mag_suscep = (aveMAG2 - (aveMAG*aveMAG))/kt;
