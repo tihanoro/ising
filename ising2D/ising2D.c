@@ -14,7 +14,7 @@
 
 double energy(int **array);
 double magnetic(int **array);
-void metropolis3D(int **array, double kt, double *en, double *mag);
+void metropolis2D(int **array, double kt, double *en, double *mag);
 int diffEnergy(int **array, int x, int y);
 void outputSpin(int **array, int kt);
 void outputEnergy(FILE *enfile, int times, double en);
@@ -83,13 +83,13 @@ int main(void){
         // 熱平衡かさせるための事前動作
         for(times=0;times<STEP;times++){
             for(i=0;i<N;i++){
-                metropolis3D(array, kt, &en, &mag);
+                metropolis2D(array, kt, &en, &mag);
             }
         }
         
         // 物理量を計算するループ
         for(times=0;times<LOOP;times++){
-            metropolis3D(array, kt, &en, &mag);
+            metropolis2D(array, kt, &en, &mag);
             // 物理量の総和の計算
             sumEN += en;
             sumMAG += mag;
@@ -173,7 +173,7 @@ double magnetic(int **array){
 }
 
 // スピン配列を状態遷移させるための処理
-void metropolis3D(int **array, double kt, double *en, double *mag){
+void metropolis2D(int **array, double kt, double *en, double *mag){
     int x, y;
     double diffen;
     // ランダムに選択した1点を反転させた時のエネルギーの差を計算する処理

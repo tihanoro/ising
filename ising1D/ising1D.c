@@ -8,15 +8,13 @@
 #define N 10000
 #define J 1
 #define kB 1
-#define STEP 1000 // 初期依存性をなくすためのループ(モンテカルロステップ)
+#define STEP 100 // 初期依存性をなくすためのループ(モンテカルロステップ)
 #define LOOP 10000000 // 物理量を計測するループ
 
 double energy(int *array);
 double magnetic(int *array);
-void metropolis3D(int *array, double kt, double *en, double *mag);
+void metropolis1D(int *array, double kt, double *en, double *mag);
 int diffEnergy(int *array, int x);
-void outputSpin(int *array, int kt);
-void outputEnergy(FILE *enfile, int times, double en);
 
 int main(void){
     // 変数の宣言
@@ -49,7 +47,7 @@ int main(void){
     }
 
     // 温度変化させるループ
-    for(t=0.01;t<=10.00;t+=0.01){
+    for(t=0.01;t<=5.00;t+=0.01){
         // 初期配列
         for(i=0;i<N;i++){
             array[i] = Init[i];
@@ -74,13 +72,13 @@ int main(void){
         // 熱平衡かさせるための事前動作
         for(times=0;times<STEP;times++){
             for(i=0;i<N;i++){
-                metropolis3D(array, kt, &en, &mag);
+                metropolis1D(array, kt, &en, &mag);
             }
         }
         
         // 物理量を計算するループ
         for(times=0;times<LOOP;times++){
-            metropolis3D(array, kt, &en, &mag);
+            metropolis1D(array, kt, &en, &mag);
             // 物理量の総和の計算
             sumEN += en;
             sumMAG += mag;
@@ -94,19 +92,18 @@ int main(void){
         aveMAG2 = mag2/LOOP;
 
         heat = (aveEN2 - (aveEN*aveEN))/kt2;
-        mag_suscep = (aveMAG2 - (aveMAG*aveMAG))/kt;
+        mag_suscep = (aveMAG2);
 
-        // aveEN /= N;
-        // aveMAG /= N;
-        heat /= N;
-        mag_suscep /= N;
+        aveEN /= N;
+        aveMAG /= N;
+        heat /= N*N;
+        mag_suscep /= N*N;
 
         // 計算結果をファイルに記述する関数
-        fprintf(energyfile, "%f %f\n", kt, aveEN);
-        fprintf(magneticfile, "%f %f\n", kt, aveMAG);
-        fprintf(heatfile, "%f %f\n", kt, heat);
-        fprintf(mag_suscepfile, "%f %f\n", kt, mag_suscep);
-        // outputSpin(array, (int)kt);
+        fprintf(energyfile, "%f %f\n", kt/J, aveEN);
+        fprintf(magneticfile, "%f %f\n", kt/J, aveMAG);
+        fprintf(heatfile, "%f %f\n", kt/J, heat);
+        fprintf(mag_suscepfile, "%f %f\n", kt/J, mag_suscep);
 
         // 計算結果を標準出力にも表示
         printf("\r\033[Kエネルギー:%f\n",aveEN);
@@ -156,7 +153,7 @@ double magnetic(int *array){
 }
 
 // スピン配列を状態遷移させるための処理
-void metropolis3D(int *array, double kt, double *en, double *mag){
+void metropolis1D(int *array, double kt, double *en, double *mag){
     int x, y;
     double diffen;
     // ランダムに選択した1点を反転させた時のエネルギーの差を計算する処理
@@ -182,26 +179,4 @@ int diffEnergy(int *array, int x){
     sum = array[((x==N-1)?0:x+1)] + array[((x==0)?N-1:x-1)];
 
     return 2*J*array[x]*sum;
-}
-
-// スピン配置を出力する関数
-void outputSpin(int *array, int kt){
-    FILE *spinfile;
-    int i,j;
-    char str[1000];
-    sprintf(str, "output/spin/spin%d.dat", kt);
-    spinfile = fopen(str, "w");
-    for(i=0;i<N;i++){
-        if(array[i] == 1){
-            fprintf(spinfile, "+");
-        }else if(array[i] == -1){
-            fprintf(spinfile, "-");
-        }
-    }
-    fclose(spinfile);
-}
-
-// エネルギーの値を出力する関数
-void outputEnergy(FILE *enfile, int times, double en){
-    fprintf(enfile, "%d %f\n", times, en);
 }
