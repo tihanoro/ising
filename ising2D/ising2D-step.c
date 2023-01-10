@@ -6,7 +6,7 @@
 #include<time.h>
 
 #define L 300
-#define N L*L
+#define N (L*L)
 #define J 1
 #define kB 1
 #define STEP 100 // 初期依存性をなくすためのループ(モンテカルロステップ)
@@ -56,7 +56,7 @@ int main(void){
     }
 
     // 温度変化させるループ
-    for(t=0.1;t<=10.00;t+=0.1){
+    for(t=0.1;t<=3.00;t+=0.1){
         // 初期配列
         for(i=0;i<L;i++){
             for(j=0;j<L;j++){
@@ -81,11 +81,11 @@ int main(void){
         mag = magnetic(array);
 
         // 熱平衡かさせるための事前動作
-        for(times=0;times<STEP;times++){
-            for(i=0;i<N;i++){
-                metropolis2D(array, kt, &en, &mag);
-            }
-        }
+        // for(times=0;times<STEP;times++){
+        //     for(i=0;i<N;i++){
+        //         metropolis2D(array, kt, &en, &mag);
+        //     }
+        // }
         
         // 物理量を計算するループ
         for(times=0;times<LOOP;times++){
@@ -95,6 +95,10 @@ int main(void){
             sumMAG += mag;
             en2 += en*en;
             mag2 += mag*mag;
+            fprintf(energyfile, "%d %f\n", times, en/N);
+            fprintf(magneticfile, "%d %f\n", times, mag/N);
+            fprintf(heatfile, "%d %f\n", times, (en*en)/(N*N));
+            fprintf(mag_suscepfile, "%d %f\n", times, (mag*mag)/(N*N));
         }
         
         aveEN = sumEN/LOOP;
@@ -111,10 +115,14 @@ int main(void){
         mag_suscep /= N;
 
         // 計算結果をファイルに記述する関数
-        fprintf(energyfile, "%f %f\n", kt, aveEN);
-        fprintf(magneticfile, "%f %f\n", kt, aveMAG);
-        fprintf(heatfile, "%f %f\n", kt, heat);
-        fprintf(mag_suscepfile, "%f %f\n", kt, mag_suscep);
+        // fprintf(energyfile, "%f %f\n", kt, aveEN);
+        // fprintf(magneticfile, "%f %f\n", kt, aveMAG);
+        // fprintf(heatfile, "%f %f\n", kt, heat);
+        // fprintf(mag_suscepfile, "%f %f\n", kt, mag_suscep);
+        fprintf(energyfile, "\n\n");
+        fprintf(magneticfile, "\n\n");
+        fprintf(heatfile, "\n\n");
+        fprintf(mag_suscepfile, "\n\n");
         // outputSpin(array, (int)kt);
 
         // 計算結果を標準出力にも表示
